@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Email;
@@ -22,10 +23,11 @@ import org.springframework.data.annotation.Transient;
 @Entity
 @Table(name = "tbl_user")
 public class User {
-
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id")
+    @SequenceGenerator(name="tbl_user_pk_id_seq", sequenceName="tbl_user_pk_id_seq", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_user_pk_id_seq")
+    @Column(name = "user_id", updatable=false)
 	private int id;
 	
 	@Column(name = "email")

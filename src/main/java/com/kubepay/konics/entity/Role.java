@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -13,8 +14,9 @@ import javax.persistence.Table;
 public class Role {
 	
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="role_id")
+    @SequenceGenerator(name="tbl_role_pk_id_seq", sequenceName="tbl_role_pk_id_seq", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_role_pk_id_seq")
+    @Column(name = "role_id", updatable=false)
 	private int id;
 	
 	@Column(name="role")
