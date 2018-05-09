@@ -2,6 +2,7 @@ package com.kubepay.konics.view;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class StudentReportCardPdfView extends AbstractPdfView {
     if (studentReportCard.isErrorOccured()) {
       document.add(new Paragraph("Error" + studentReportCard.getErrorDescription()));
     } else {
-      Image image = Image.getInstance(getImagePath(IMG));
+      Image image = Image.getInstance(new URL("http://konics.org/images/logo-konic.png"));
       image.scaleToFit(100f, 100f);
       image.setAbsolutePosition(50f, 750f);
       document.add(image);
@@ -120,17 +121,17 @@ public class StudentReportCardPdfView extends AbstractPdfView {
     response.setHeader("Content-Disposition", "attachment; filename=\"reportcard" + new Date().getTime() + ".pdf\"");
   }
   
-  private String getImagePath(final String img) {
+  //private String getImagePath(final String img) {
     
     //final ClassLoader classLoader = getClass().getClassLoader();
-    return "/" 
-    + getClass().getProtectionDomain().getCodeSource().getLocation().getPath()  
-    + img;
+    //return "/" 
+    //+ getClass().getProtectionDomain().getCodeSource().getLocation().getPath()  
+    //+ img;
     
     //InputStream is = classLoader.getResourceAsStream(img);
     //final File file = new File(classLoader.getResourceAsStream(img),)
     //return classLoader.getResource(img).getPath();
-  }
+  //}
 
   private PdfPCell getCell(final String value, final int alignment, final Font font) {
 
