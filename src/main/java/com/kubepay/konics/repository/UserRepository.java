@@ -5,9 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import com.kubepay.konics.entity.User;
 
-
-
 @Repository("userRepository")
-public interface UserRepository extends JpaRepository<User, Long> {
-	 User findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Integer> {
+
+  User findByEmail(String email);
 }

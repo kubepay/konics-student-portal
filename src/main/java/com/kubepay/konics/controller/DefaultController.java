@@ -1,45 +1,60 @@
 package com.kubepay.konics.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.kubepay.konics.service.SecurityService;
 
 @Controller
 public class DefaultController {
 
-    @GetMapping("/")
-    public String home1() {
-        return "/home";
-    }
+  @Autowired
+  private SecurityService securityService;
 
-    @GetMapping("/home")
-    public String home() {
-        return "/home";
-    }
+  @RequestMapping(
+      value = { "/" },
+      method = RequestMethod.GET)
+  public String index(final Model model) {
 
-    @GetMapping("/admin")
-    public String admin() {
-        return "/admin";
-    }
+    if (null != securityService.findLoggedInUser()) {
+      model.addAttribute("user", securityService.findLoggedInUser());
+      model.addAttribute("highlight", "welcome");
+      return "welcome";
+    } else
+      return "login";
+  }
 
-    @GetMapping("/user")
-    public String user() {
-        return "/user";
-    }
+  @GetMapping("/welcome")
+  public String welcome(final Model model) {
 
-    @GetMapping("/about")
-    public String about() {
-        return "/about";
-    }
+    if (null != securityService.findLoggedInUser()) {
+      model.addAttribute("user", securityService.findLoggedInUser());
+      model.addAttribute("highlight", "welcome");
+      return "welcome";
+    } else
+      return "login";
+  }
 
-    @GetMapping("/login")
-    public String login() {
-        return "/login";
-    }
+  //Depreciate
+  @GetMapping("/admin")
+  public String admin(final Model model) {
 
-    @GetMapping("/403")
-    public String error403() {
-        return "/error/403";
-    }
+    if (null != securityService.findLoggedInUser()) {
+      model.addAttribute("user", securityService.findLoggedInUser());
+      model.addAttribute("highlight", "admin");
+      return "admin";
+    } else
+      return "login";
+  }
+
+  @GetMapping("/403")
+  public String error403(final Model model) {
+
+    return "/error/403";
+  }
 
 }
-

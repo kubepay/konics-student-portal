@@ -1,115 +1,113 @@
 package com.kubepay.konics.entity;
 
+import java.io.Serializable;
+import java.util.Date;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tbl_user")
-public class User {
-	
-	@Id
-    @SequenceGenerator(name="tbl_user_pk_id_seq", sequenceName="tbl_user_pk_id_seq", allocationSize=1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="tbl_user_pk_id_seq")
-    @Column(name = "user_id", updatable=false)
-	private int id;
-	
-	@Column(name = "email")
-	@Email(message = "*Please provide a valid Email")
-	@NotEmpty(message = "*Please provide an email")
-	private String email;
-	
-	@Column(name = "password")
-	@Length(min = 5, message = "*Your password must have at least 5 characters")
-	@NotEmpty(message = "*Please provide your password")
-	@Transient
-	private String password;
-	
-	@Column(name = "name")
-	@NotEmpty(message = "*Please provide your name")
-	private String name;
-	
-	@Column(name = "last_name")
-	@NotEmpty(message = "*Please provide your last name")
-	private String lastName;
-	
-	@Column(name = "active")
-	private int active;
-	
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "tbl_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
+@Table(
+    name = "user")
+@EntityListeners(AuditingEntityListener.class)
+@Data
+@NoArgsConstructor
+public class User implements Serializable {
 
-	public int getId() {
-		return id;
-	}
+  private static final long serialVersionUID = 5086314658485962221L;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+  @Id
+  @GeneratedValue(
+      strategy = GenerationType.AUTO)
+  @Column(
+      name = "id")
+  private Integer id;
 
-	public String getPassword() {
-		return password;
-	}
+  @Column(
+      name = "email",
+      length = 63,
+      nullable = false,
+      unique = true)
+  private String email;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  @Column(
+      name = "password",
+      length = 31,
+      nullable = false)
+  @Transient
+  private String password;
 
-	public String getName() {
-		return name;
-	}
+  @Column(
+      name = "name",
+      length = 31,
+      nullable = false)
+  private String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  @Column(
+      name = "lastname",
+      length = 31)
+  private String lastName;
 
-	public String getLastName() {
-		return lastName;
-	}
+  @Column(
+      name = "active",
+      nullable = false)
+  private Integer active;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+  @Column(
+      name = "role",
+      length = 31,
+      nullable = false)
+  private String role;
 
-	public String getEmail() {
-		return email;
-	}
+  @Column(
+      name = "center",
+      nullable = false)
+  private Integer center;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  @CreatedBy
+  @Column(
+      name = "created_by",
+      length = 63,
+      updatable = false,
+      nullable = false)
+  private String createdBy;
 
-	public int getActive() {
-		return active;
-	}
+  @CreatedDate
+  @Column(
+      name = "created_at",
+      updatable = false,
+      nullable = false)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createdAt;
 
-	public void setActive(int active) {
-		this.active = active;
-	}
+  @LastModifiedBy
+  @Column(
+      name = "modified_by",
+      length = 63)
+  private String modifiedBy;
 
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
+  @LastModifiedDate
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(
+      name = "modified_at")
+  private Date modifiedAt;
+  
 
 }
