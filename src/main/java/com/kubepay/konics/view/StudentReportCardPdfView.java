@@ -1,5 +1,6 @@
 package com.kubepay.konics.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.Base64.InputStream;
 import com.kubepay.konics.config.AbstractPdfView;
 import com.kubepay.konics.model.StudentReportCard;
 import com.kubepay.konics.model.StudentReportCardMarks;
@@ -119,9 +121,15 @@ public class StudentReportCardPdfView extends AbstractPdfView {
   }
   
   private String getImagePath(final String img) {
-
-    final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    return classLoader.getResource(img).getPath();
+    
+    //final ClassLoader classLoader = getClass().getClassLoader();
+    return "/" 
+    + getClass().getProtectionDomain().getCodeSource().getLocation().getPath()  
+    + img;
+    
+    //InputStream is = classLoader.getResourceAsStream(img);
+    //final File file = new File(classLoader.getResourceAsStream(img),)
+    //return classLoader.getResource(img).getPath();
   }
 
   private PdfPCell getCell(final String value, final int alignment, final Font font) {
