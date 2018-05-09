@@ -19,7 +19,7 @@
           <li><a href="#">Center: ${user.centername}</a></li>
           <li><a href="#">Role: ${user.role}</a></li>
           <c:if test = "${user.role == 'ADMIN'}">
-            <li><a href="/admin">Management</a></li>
+            <li><a href="#">Management</a></li>
           </c:if>
           <li><a href="/logout">Logout</a></li>
         </ul>

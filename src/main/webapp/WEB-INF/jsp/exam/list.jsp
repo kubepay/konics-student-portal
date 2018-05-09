@@ -21,6 +21,10 @@
 <script type="text/javascript" src="${contextPath}/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="${contextPath}/DataTables/datatables.min.js"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
+
 	function post(path, params, method) {
 		method = method || "post";
 
@@ -92,33 +96,33 @@
                   <td>
                     <div class="btn-group" role="group">
                       <spring:url value="/exam/${exam.id}" var="examUrl" />
-                      <button class="btn btn-info" onclick="location.href='${examUrl}'">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                      <button class="btn btn-info" onclick="location.href='${examUrl}'" title="View" data-toggle="tooltip" data-placement="bottom">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true" title="View"></span>
                       </button>
 
                       <c:if test="${user.role ne 'GUEST'}">
                         <spring:url value="/exam/${exam.id}/update" var="updateUrl" />
-                        <button class="btn btn-primary" onclick="location.href='${updateUrl}'">
-                          <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        <button class="btn btn-primary" onclick="location.href='${updateUrl}'" title="Edit" data-toggle="tooltip" data-placement="bottom">
+                          <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Edit"></span>
                         </button>
                       </c:if>
 
                       <c:if test="${user.role == 'ADMIN'}">
                         <spring:url value="/exam/${exam.id}/delete" var="deleteUrl" />
-                        <button class="btn btn-danger" onclick="this.disabled=true;post('${deleteUrl}')">
-                          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        <button class="btn btn-danger" onclick="this.disabled=true;post('${deleteUrl}')" title="Delete" data-toggle="tooltip" data-placement="bottom">
+                          <span class="glyphicon glyphicon-remove" aria-hidden="true" title="Delete"></span>
                         </button>
                       </c:if>
                       <c:if test="${user.role ne 'GUEST'}">
-                        <spring:url value="/exam/${exam.id}/marks" var="reportCardUrl" />
-                        <button class="btn btn-info" onclick="location.href='${reportCardUrl}'">
-                          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        <spring:url value="/exam/${exam.id}/marks" var="marksCardUrl" />
+                        <button class="btn btn-info" onclick="location.href='${marksCardUrl}'" title="Marks" data-toggle="tooltip" data-placement="bottom">
+                          <span class="glyphicon glyphicon-edit" aria-hidden="true" title="Marks"></span>
                         </button>
                       </c:if>
                       <c:if test="${user.role ne 'GUEST'}">
-                      <spring:url value="/exam/${exam.id}/reportcard" var="reportCardUrl" />
-                      <button class="btn btn-info" onclick="location.href='${reportCardUrl}'">
-                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                      <spring:url value="/exam/${exam.id}/result/pdf" var="reportCardUrl" />
+                      <button class="btn btn-info" onclick="location.href='${reportCardUrl}'" title="Result" data-toggle="tooltip" data-placement="bottom">
+                        <span class="glyphicon glyphicon-file" aria-hidden="true" title="Result"></span>
                       </button>
                       </c:if>
                     </div>

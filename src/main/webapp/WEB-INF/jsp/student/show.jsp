@@ -86,7 +86,7 @@
             <div class="row" style="line-height: 50%;">&nbsp;</div>
             <div class="row">
               <label class="col-sm-4">Date of Joining</label>
-              <div class="col-sm-8">${student.dateDoj}/${student.monthDoj}/${student.yearDoj}</div>
+              <div class="col-sm-8">${student.strdtJoining}</div>
             </div>
             <div class="row" style="line-height: 50%;">&nbsp;</div>
             <div class="row">
@@ -163,12 +163,12 @@
             <div class="row" style="line-height: 50%;">&nbsp;</div>
             <div class="row">
               <label class="col-sm-4">Date Of Birth</label>
-              <div class="col-sm-8">${student.dateDob}/${student.monthDob}/${student.yearDob}</div>
+              <div class="col-sm-8">${student.strdtBirth}</div>
             </div>
             <div class="row" style="line-height: 50%;">&nbsp;</div>
             <div class="row">
               <label class="col-sm-4">Date of Leaving</label>
-              <div class="col-sm-8">${student.dateDol}/${student.monthDol}/${student.yearDol}</div>
+              <div class="col-sm-8">${student.strdtLeaving}</div>
             </div>
             <div class="row" style="line-height: 50%;">&nbsp;</div>
             <div class="row">

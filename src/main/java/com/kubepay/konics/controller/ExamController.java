@@ -30,9 +30,11 @@ import com.kubepay.konics.error.BusinessException;
 import com.kubepay.konics.error.ExamBusinessException;
 import com.kubepay.konics.model.BatchDto;
 import com.kubepay.konics.model.ExamDto;
+import com.kubepay.konics.model.ExamResultCard;
 import com.kubepay.konics.model.SecureUserDto;
 import com.kubepay.konics.service.ExamService;
 import com.kubepay.konics.service.SecurityService;
+import com.kubepay.konics.view.ExamResultCardPdfView;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -216,6 +218,8 @@ public class ExamController {
 
     return "exam/show";
   }
+  
+  
 
   private void populateDefaultModel(Model model) {
 
@@ -269,6 +273,18 @@ public class ExamController {
       model.addAttribute("msg", e.getMessage());
     }
     model.addAttribute("batchList", getBatchMap);
+  }
+  
+  @RequestMapping(
+      value = "/exam/{id}/result/pdf",
+      method = RequestMethod.GET)
+  public ModelAndView showReportCardPdf(@PathVariable("id") final Long id) throws Exception {
+    Map<String, Object> model = new HashMap<>();
+
+    final ExamResultCard examResultCard = examService.getResultPdf(id);
+    model.put("examResultCard", examResultCard);
+
+    return new ModelAndView(new ExamResultCardPdfView(), model);
   }
 
   @ExceptionHandler(EmptyResultDataAccessException.class)

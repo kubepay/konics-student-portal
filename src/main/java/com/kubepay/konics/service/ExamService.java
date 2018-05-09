@@ -6,6 +6,7 @@ import java.util.Map;
 import com.kubepay.konics.error.ExamBusinessException;
 import com.kubepay.konics.model.BatchDto;
 import com.kubepay.konics.model.ExamDto;
+import com.kubepay.konics.model.ExamResultCard;
 
 public interface ExamService {
 
@@ -18,5 +19,7 @@ public interface ExamService {
   Long saveOrUpdateExam(ExamDto batch) throws ExamBusinessException;
 
   Map<Long, BatchDto> getbatchMap() throws ExamBusinessException;
+
+  ExamResultCard getResultPdf(Long id) throws ExamBusinessException;
 
 }

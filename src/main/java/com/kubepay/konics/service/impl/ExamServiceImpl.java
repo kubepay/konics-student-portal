@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +21,18 @@ import com.kubepay.konics.entity.Batch;
 import com.kubepay.konics.entity.Center;
 import com.kubepay.konics.entity.Exam;
 import com.kubepay.konics.entity.Marks;
+import com.kubepay.konics.entity.Student;
 import com.kubepay.konics.error.ExamBusinessException;
 import com.kubepay.konics.model.BatchDto;
 import com.kubepay.konics.model.CenterDto;
 import com.kubepay.konics.model.ExamDto;
+import com.kubepay.konics.model.ExamResultCard;
+import com.kubepay.konics.model.ExamResultCardMarks;
 import com.kubepay.konics.repository.BatchRepository;
 import com.kubepay.konics.repository.CenterRepository;
 import com.kubepay.konics.repository.ExamRepository;
 import com.kubepay.konics.repository.MarksRepository;
+import com.kubepay.konics.repository.StudentRepository;
 import com.kubepay.konics.service.ExamService;
 import com.kubepay.konics.service.SecurityService;
 
@@ -38,6 +43,8 @@ public class ExamServiceImpl implements ExamService {
 
   private final BatchRepository batchRepository;
 
+  private final StudentRepository studentRepository;
+
   private final CenterRepository centerRepository;
 
   private final MarksRepository marksRepository;
@@ -46,12 +53,14 @@ public class ExamServiceImpl implements ExamService {
 
   @Autowired
   public ExamServiceImpl(final ExamRepository examRepository,
+      final StudentRepository studentRepository,
       final BatchRepository batchRepository,
       final CenterRepository centerRepository,
       final MarksRepository marksRepository,
       final SecurityService securityService) {
 
     this.securityService = securityService;
+    this.studentRepository = studentRepository;
     this.examRepository = examRepository;
     this.batchRepository = batchRepository;
     this.marksRepository = marksRepository;
@@ -66,7 +75,7 @@ public class ExamServiceImpl implements ExamService {
 
     final Integer center = securityService.findLoggedInUser().getCenter();
     final List<Exam> exams = examRepository.findByCenter(center);
-    
+
     final List<BatchDto> batches = getBatchData();
     final Map<Long, BatchDto> batchMap = new HashMap<>();
     batches.forEach(batch -> batchMap.put(batch.getId(), batch));
@@ -92,15 +101,15 @@ public class ExamServiceImpl implements ExamService {
     final Integer center = securityService.findLoggedInUser().getCenter();
     final String user = securityService.findLoggedInUsername();
     final Long id = examDto.getId();
-    final List<Exam> foundList = examRepository.findByNameAndSubjectAndBatchAndCenter(examDto.getName(), examDto.getSubject(), 
+    final List<Exam> foundList = examRepository.findByNameAndSubjectAndBatchAndCenter(examDto.getName(),
+        examDto.getSubject(),
         examDto.getBatchId(), center);
     if (null == id) {
 
-
-      if(!foundList.isEmpty()) {
+      if (!foundList.isEmpty()) {
         throw new ExamBusinessException("Combination of Exam Name, Subject and Batch should be unique!");
       }
-      
+
       final Exam exam = new Exam();
       fillExam(exam, examDto, center, user, false);
 
@@ -108,16 +117,15 @@ public class ExamServiceImpl implements ExamService {
       return updatedExam.getId();
     } else {
       final Exam exam = examRepository.findOne(id);
-      if(foundList.size() > 1) {
+      if (foundList.size() > 1) {
         throw new ExamBusinessException("Combination of Exam Name, Subject and Batch should be unique!");
-      } else if(foundList.size() == 1){
+      } else if (foundList.size() == 1) {
         final Exam forValidation = foundList.get(0);
-        if (forValidation.getId() !=  exam.getId()) {
+        if (forValidation.getId() != exam.getId()) {
           throw new ExamBusinessException("Combination of Exam Name, Subject and Batch should be unique!");
         }
       }
-      
-      
+
       if (null == exam)
         throw new EmptyResultDataAccessException(1);
       fillExam(exam, examDto, center, user, true);
@@ -274,6 +282,112 @@ public class ExamServiceImpl implements ExamService {
 
     final CenterDto centerDto = findByCenterId(batch.getCenter());
     return new BatchDto(batch, centerDto);
+  }
+
+  @Override
+  public ExamResultCard getResultPdf(final Long id) throws ExamBusinessException {
+
+    final ExamResultCard examResultCard = new ExamResultCard();
+
+    final ExamDto examDto = getExamById(id);
+    if (null == examDto || examDto.getActiveId() != 1)
+      return new ExamResultCard("Exam Not Found or InActive");
+
+    if (null != examDto.getName())
+      examResultCard.setName(examDto.getName());
+    else
+      examResultCard.setName("NA");
+    if (null != examDto.getSubject())
+      examResultCard.setSubject(examDto.getSubject());
+    else
+      examResultCard.setSubject("NA");
+    if (null != examDto.getTotalMarks())
+      examResultCard.setTotalMarks(String.valueOf(examDto.getTotalMarks()));
+    else
+      examResultCard.setTotalMarks("NA");
+    if (null != examDto.getPassingMarks())
+      examResultCard.setPassingMarks(String.valueOf(examDto.getPassingMarks()));
+    else
+      examResultCard.setPassingMarks("NA");
+    if (null != examDto.getPreparedBy())
+      examResultCard.setPreparedBy(examDto.getPreparedBy());
+    else
+      examResultCard.setPreparedBy("NA");
+    if (null != examDto.getEvaluatedBy())
+      examResultCard.setEvaluatedBy(examDto.getEvaluatedBy());
+    else
+      examResultCard.setEvaluatedBy("NA");
+    if (null != examDto.getStrdtConduct())
+      examResultCard.setStrdtConduct(examDto.getStrdtConduct());
+    else
+      examResultCard.setStrdtConduct("NA");
+    if (null != examDto.getStrdtResult())
+      examResultCard.setStrdtResult(examDto.getStrdtResult());
+    else
+      examResultCard.setStrdtResult("NA");
+
+    if (null == examDto.getBatch() || null == examDto.getBatch().getId())
+      return new ExamResultCard("Student is not assigned to any Batch");
+
+    final BatchDto batchDto = getBatchById(examDto.getBatch().getId());
+    if (null == batchDto || batchDto.getId() == null || batchDto.getActiveId() != 1)
+      return new ExamResultCard("Batch Mismatch or Inactive");
+
+    final Long batchId = examDto.getBatch().getId();
+
+    if (null != batchDto.getCourseName())
+      examResultCard.setCourseName(batchDto.getCourseName());
+    else
+      examResultCard.setCourseName("NA");
+
+    if (null != batchDto.getSessionYear())
+      examResultCard.setSessionYear(batchDto.getSessionYear());
+    else
+      examResultCard.setSessionYear("NA");
+
+    if (null != batchDto.getStream())
+      examResultCard.setStream(batchDto.getStream());
+    else
+      examResultCard.setStream("NA");
+
+    if (null != batchDto.getSection())
+      examResultCard.setSection(batchDto.getSection());
+    else
+      examResultCard.setSection("NA");
+
+    final Integer centerId = securityService.findLoggedInUser().getCenter();
+    final CenterDto centerDto = findByCenterId(centerId);
+    if (null != centerDto && null != centerDto.getCenterName())
+      examResultCard.setCenter(centerDto.getCenterName());
+    else
+      examResultCard.setCenter("NA");
+
+    final List<ExamResultCardMarks> examResultCardMarks = new LinkedList<>();
+
+    final List<Marks> markDtos = marksRepository.findByExamAndBatchAndCenterAndActive(id, batchId, centerId, 1);
+
+    for (final Marks ed : markDtos) {
+
+      final ExamResultCardMarks sr = new ExamResultCardMarks();
+
+      if (null == ed.getMark())
+        sr.setMarksObtained("AB");
+      else
+        sr.setMarksObtained(String.valueOf(ed.getMark()));
+
+      final Student s = studentRepository.findOne(ed.getStudent());
+      sr.setRollNumber(s.getRollNumber());
+      sr.setStudentName(s.getName());
+
+      examResultCardMarks.add(sr);
+    }
+
+    if (examResultCardMarks.isEmpty())
+      return new ExamResultCard("No marks has been calculated for this exam.");
+    else
+      examResultCard.setExamResultCardMarks(examResultCardMarks);
+
+    return examResultCard;
   }
 
 }

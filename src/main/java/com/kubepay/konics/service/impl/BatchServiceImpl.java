@@ -162,6 +162,7 @@ public class BatchServiceImpl implements BatchService {
     batch.setStream(cleanStr(batchDto.getStream()));
     batch.setActive(batchDto.getActiveId());
     batch.setCode(cleanStr(batchDto.getCode()));
+    batch.setAttendence(batchDto.getAttendance());
     batch.setCenter(center);
     if (update) {
       
